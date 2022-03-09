@@ -1,5 +1,5 @@
 const WORD_POOL = [
-  "L9", "TURBO", "WEED", "HACK", "UNDETECTED"
+  "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF"
 ];
 
 const WORD_COMBINAISONS = {
@@ -7,6 +7,9 @@ const WORD_COMBINAISONS = {
     ["IN"],
     ["SOUTH", "NORTH"],
     ["TAIWAN", "SRI LANKA"]
+  ],
+  "WTF": [
+    ["(wtf ?)"]
   ]
 }
 
