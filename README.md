@@ -33,8 +33,7 @@ const text = RyzeHackGenerator.generate({ /* config */ });
 
 ```number``` ```default: 75```
 
-The maximum length of the generated text. The length corresponds to the amount of characters
-**without whitespaces**.
+The maximum length corresponding to the amount of sequences of words added to the result.
 
 ---
 
@@ -70,3 +69,62 @@ sequences of texts.
 ```number``` ```default: 7```
 
 Same as ```minChineseSequenceLength``` but for the maximum length. Must obviously be higher.
+
+---
+
+### minWordSequenceLength
+
+```number``` ```default: 10```
+
+Minimum length of a sequence of words.
+
+---
+
+### maxWordSequenceLength
+
+```number``` ```default: 20```
+
+Maximum length of a sequence of words.
+
+---
+
+### wordPool
+
+```Function``` ```default: undefined```
+
+Defines a callable configuration which is going to configure the array of available words.
+
+If used, **MUST** return an array of strings.
+
+```ts
+import RyzeHackGenerator from '@emeraldou/ryze';
+
+RyzeHackGenerator.generate({
+    wordPool: (pool: Array<string>) => {
+      pool.push("TEST");
+      return pool;
+    }
+});
+```
+
+---
+
+### chinesePool
+
+```Function``` ```default: undefined```
+
+Defines a callable configuration which is going to configure the array of available 
+chinese characters inserted by the end of sequences of words.
+
+If used, **MUST** return an array of strings.
+
+```ts
+import RyzeHackGenerator from '@emeraldou/ryze';
+
+RyzeHackGenerator.generate({
+    chinesePool: (pool: Array<string>) => {
+      pool.push("厦");
+      return pool;
+    }
+});
+```

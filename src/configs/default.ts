@@ -5,7 +5,9 @@ const defaultConfig: Config = {
   punctuationProbability: 25,
   lowercaseProbability: 35,
   minChineseSequenceLength: 3,
-  maxChineseSequenceLength: 7
+  maxChineseSequenceLength: 7,
+  minWordSequenceLength: 10,
+  maxWordSequenceLength: 20
 }
 
 export default defaultConfig;

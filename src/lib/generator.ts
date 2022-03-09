@@ -1,11 +1,11 @@
 import { Config } from '../interfaces/config';
 
-const CHINESE_POOL = [
+let CHINESE_POOL = [
   "英", "雄", "联", "盟", "大", "厦", "及", "发", "暨", "在", "地", "毯", "上",
   "骇", "客"
 ];
 
-const WORD_POOL = [
+let WORD_POOL = [
   "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
   "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
   "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING",
@@ -99,7 +99,15 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
 export const generate = (config: Config) => {
   const result: Array<string> = [];
   let currentSequence = [];
-  let lastRequiredSequenceLength = getRandomInt(10, 20);
+  let lastRequiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
+
+  if (config.wordPool) {
+    WORD_POOL = config.wordPool(WORD_POOL);
+  }
+
+  if (config.chinesePool) {
+    CHINESE_POOL = config.chinesePool(CHINESE_POOL);
+  }
 
   while (result.length < config.length) {
     // Generating words
@@ -120,29 +128,38 @@ export const generate = (config: Config) => {
         } while (currentSequence.join(" ").includes([word, ...phrase].join(" ")));
 
         const totalPhrase: Array<string> = [word, ...phrase];
+        let lowercasePhrase = [];
 
         // Chances to reduce words to lowercase
-        if (getRandomInt(0, 100) < config.lowercaseProbability) {
+        if (getRandomInt(0, 100) < config.lowercaseProbability + 1) {
           for (let i = 0; i < totalPhrase.length; i++) {
-            totalPhrase.splice(i, 1, totalPhrase[i].toLowerCase());
+            lowercasePhrase.push(totalPhrase[i].toLowerCase());
           }
         }
+        else {
+          lowercasePhrase = totalPhrase;
+        }
 
-        currentSequence.push(...totalPhrase);
+        currentSequence.push(...lowercasePhrase);
       }
       else {
+        // Chances to reduce words to lowercase
+        if (getRandomInt(0, 100) < config.lowercaseProbability + 1) {
+          word = word.toLowerCase();
+        }
+
         currentSequence.push(word);
       }
 
       // Chances to display punctuation
-      if (getRandomInt(0, 100) < config.punctuationProbability) {
+      if (getRandomInt(0, 100) < config.punctuationProbability + 1) {
         currentSequence.push(getRandomPunctuation());
       }
     }
     // Generating chinese characters
     // Resets current sequence word count
     else {
-      lastRequiredSequenceLength = getRandomInt(15, 30);
+      lastRequiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
       result.push(...currentSequence);
       currentSequence = [];
 
