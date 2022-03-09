@@ -1,7 +1,7 @@
 {
   "name": "@emeraldou/ryze",
-  "version": "0.2.5",
-  "description": "Simple tool",
+  "version": "1.0.0",
+  "description": "A simple and flexible tool in order to easily generate Doinb's Ryze Hack text-like strings.",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
