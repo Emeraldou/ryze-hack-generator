@@ -6,7 +6,8 @@ const CHINESE_POOL = [
 const WORD_POOL = [
   "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
   "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
-  "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS"
+  "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING",
+  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF"
 ];
 
 const WORD_COMBINAISONS = {
@@ -37,15 +38,15 @@ const getRandomInt = (min: number, max: number) => {
 }
 
 const getRandomChineseChar = () => {
-  return CHINESE_POOL[getRandomInt(0, CHINESE_POOL.length)];
+  return CHINESE_POOL[getRandomInt(0, CHINESE_POOL.length - 1)];
 }
 
 const getRandomWord = () => {
-  return WORD_POOL[getRandomInt(0, WORD_POOL.length)];
+  return WORD_POOL[getRandomInt(0, WORD_POOL.length - 1)];
 }
 
 const getRandomPunctuation = () => {
-  return WORD_COMBINAISONS["*"][getRandomInt(0, WORD_COMBINAISONS["*"].length)];
+  return WORD_COMBINAISONS["*"][0][getRandomInt(0, WORD_COMBINAISONS["*"][0].length - 1)];
 }
 
 const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
