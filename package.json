@@ -1,5 +1,5 @@
 {
-  "name": "@emeraldou/ryze-hack-generator",
+  "name": "@emeraldou/ryze",
   "version": "1.0.0",
   "description": "Simple tool",
   "main": "build/main/index.js",

@@ -15,14 +15,14 @@ const getRandomInt = (max: number) => {
 }
 
 const getRandomWord = () => {
-  return WORD_POOL[getRandomInt(WORD_POOL.length - 1)];
+  return WORD_POOL[getRandomInt(WORD_POOL.length)];
 }
 
 const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
   const result: Array<string> = [];
 
   combinaisons.forEach((comb: Array<string>) => {
-    const rand = getRandomInt(comb.length - 1);
+    const rand = getRandomInt(comb.length);
     result.push(comb[rand]);
   });
 
@@ -30,18 +30,18 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
 }
 
 export const generate = () => {
-  let result = "";
+  const result: Array<string> = [];
   
   for (let i = 0; i < 4; i++) {
     const word = getRandomWord();
 
-    result += word;
+    result.push(word)
 
     if (Object.keys(WORD_COMBINAISONS).includes(word)) {
       const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word];
-      result += buildPhraseFromCombinaisons(combinaisons);
+      result.push(buildPhraseFromCombinaisons(combinaisons));
     }
   }
   
-  return result;
+  return result.join(" ");
 }
