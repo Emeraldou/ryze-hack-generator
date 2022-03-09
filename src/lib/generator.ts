@@ -5,7 +5,8 @@ const CHINESE_POOL = [
 
 const WORD_POOL = [
   "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
-  "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI"
+  "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
+  "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS"
 ];
 
 const WORD_COMBINAISONS = {
@@ -22,6 +23,9 @@ const WORD_COMBINAISONS = {
   ],
   "BURGER KING": [
     ["EMPLOYEE", "MANAGER", "CEO"]
+  ],
+  "360": [
+    ["NO SCOPE", "TRIX", "HACK"]
   ],
   "*": [
     ["?", "??", "???", "!", "!!"]
@@ -40,6 +44,10 @@ const getRandomWord = () => {
   return WORD_POOL[getRandomInt(0, WORD_POOL.length)];
 }
 
+const getRandomPunctuation = () => {
+  return WORD_COMBINAISONS["*"][getRandomInt(0, WORD_COMBINAISONS["*"].length)];
+}
+
 const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
   const result: Array<string> = [];
 
@@ -53,23 +61,35 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
 
 export const generate = () => {
   const result: Array<string> = [];
-  let currentSequence = 0;
+  let currentSequence = [];
 
   while (result.length < 200) {
-    const countAtBeginning = result.length;
+    // Generating words
+    if (currentSequence.length < 40) {
+      let word;
 
-    if (currentSequence < 40) {
-      const word = getRandomWord();
+      while (!word || currentSequence.includes(word)) {
+        word = getRandomWord();
+      }
 
-      result.push(word);
+      currentSequence.push(word);
 
       if (Object.keys(WORD_COMBINAISONS).includes(word)) {
         const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word];
-        result.push(buildPhraseFromCombinaisons(combinaisons));
+        currentSequence.push(buildPhraseFromCombinaisons(combinaisons));
       }
+
+      // 15% chance to display punctuation
+      if (getRandomInt(0, 100) < 15) {
+        currentSequence.push(getRandomPunctuation());
+      }
+
+      result.push(...currentSequence);
     }
+    // Generating chinese characters
+    // Resets current sequence word count
     else {
-      currentSequence = 0;
+      currentSequence = [];
 
       const nbChar = getRandomInt(3, 7);
       let chinesePhrase = "";
@@ -80,9 +100,6 @@ export const generate = () => {
 
       result.push(chinesePhrase);
     }
-
-    const countAtEnding = result.length;
-    currentSequence += countAtEnding - countAtBeginning;
   }
   
   return result.join(" ");
