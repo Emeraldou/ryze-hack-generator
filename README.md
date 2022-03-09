@@ -4,6 +4,8 @@ A simple and flexible tool in order to easily generate Doinb's Ryze Hack text-li
 
 ## Getting Started
 
+```npm i @emeraldou/ryze```
+
 If you're using **ES6 + Typescript**, simply import the component like that :
 
 ```typescript
