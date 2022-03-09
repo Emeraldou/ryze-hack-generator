@@ -7,7 +7,7 @@ const WORD_POOL = [
   "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
   "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
   "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING",
-  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF"
+  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF", "1200", "300K CRIT"
 ];
 
 const WORD_COMBINAISONS = {
@@ -27,6 +27,15 @@ const WORD_COMBINAISONS = {
   ],
   "360": [
     ["NO SCOPE", "TRIX", "HACK"]
+  ],
+  "1200": [
+    ["MOVEMENT SPEED", "ABILITY POWER", "ATTACK DAMAGE"]
+  ],
+  "YASSIN": [
+    ["INSTALOCK", ""]
+  ],
+  "FATIMA": [
+    ["INSTALOCK", ""]
   ],
   "*": [
     ["?", "??", "???", "!", "!!"]
@@ -57,7 +66,7 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
     result.push(comb[rand]);
   });
 
-  return result.join(" ");
+  return result;
 }
 
 export const generate = () => {
@@ -77,7 +86,14 @@ export const generate = () => {
 
       if (Object.keys(WORD_COMBINAISONS).includes(word)) {
         const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word];
-        currentSequence.push(buildPhraseFromCombinaisons(combinaisons));
+
+        let phrase;
+
+        while (!phrase || currentSequence.includes(phrase)) {
+          phrase = buildPhraseFromCombinaisons(combinaisons);
+        }
+
+        currentSequence.push(...phrase);
       }
 
       // 15% chance to display punctuation
