@@ -1,3 +1,3 @@
 # ryze-hack-generator
 
-Simple tool
+Simple tool to
