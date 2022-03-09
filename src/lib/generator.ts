@@ -7,14 +7,27 @@ const WORD_POOL = [
   "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
   "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
   "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING",
-  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF", "1200", "300K CRIT"
+  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF", "1200", "300K CRIT", "ORNITHORYNQUE",
+  "CHEVRE", "TOP 1", "9K ELO", "LMAO", "ROFL", "WORLD RECORD", "BAN", "DOPA", "OPGG",
+  "XD", "CHICKEN", "NUGGETS", "CHINESE", "FAKER", "RIOT", "TRICK2G", "3K ELO",
+  "200K CRIT", "CHEDDAR", "DAB", "MCFLY", "CHOVY", "JAPENESE", "FUCK", "DUMBFUCK",
+  "BRAIN", "FAST", "SWAG", "ARAM", "SLAY", "FIGHT", "SASUKE", "KOREAN", "BUG",
+  "ONLYFANS", "COFFEE", "MACRO", "GOD", "GULAG", "TELEPORTATION", "COOLDOWN"
 ];
 
 const WORD_COMBINAISONS = {
   "UNDETECTED": [
     ["IN"],
-    ["SOUTH", "NORTH", "EAST", "WEST"],
-    ["TAIWAN", "SRI LANKA", "CAMBODIA", "VIETNAM", "CHINA", "TANZANIA"]
+    [
+      "SOUTH", "NORTH", "EAST", "WEST", "NORTH-WESTERN", "NORTH-EASTERN",
+      "SOUTH-WESTERN", "SOUTH-EASTERN", "NORTHERN", "SOUTHERN", "WESTERN",
+      "EASTERN", "MIDDLE"
+    ],
+    [
+      "TAIWAN", "SRI LANKA", "CAMBODIA", "VIETNAM", "CHINA", "TANZANIA",
+      "TIMBUKTU", "PERU", "BRUNEI", "ZANZIBAR", "BOMBAY", "AZERBAIJAN",
+      "BANGKOK", "SYRIA", "TAJIKISTAN", "TOKYO", "ABIDJAN", "NAIROBI"
+    ]
   ],
   "WTF": [
     ["(wtf ?)", "WAS THAT ???", "BRO"]
@@ -26,7 +39,7 @@ const WORD_COMBINAISONS = {
     ["EMPLOYEE", "MANAGER", "CEO"]
   ],
   "360": [
-    ["NO SCOPE", "TRIX", "HACK"]
+    ["NO SCOPE", "TRIX", "HACK", "LP UNTIL CHALLENGER"]
   ],
   "1200": [
     ["MOVEMENT SPEED", "ABILITY POWER", "ATTACK DAMAGE"]
@@ -37,8 +50,19 @@ const WORD_COMBINAISONS = {
   "FATIMA": [
     ["INSTALOCK", ""]
   ],
+  "FAKER": [
+    ["RETARDED", "WHAT WAS THAT ???", "WTF ?"]
+  ],
+  "MCFLY": [
+    ["AND"],
+    ["CARLITO", "YOUR MOTHER", "AMOURANTH"],
+    ["WTF ?"]
+  ],
+  "FAST": [
+    ["REKT", "SEX", "SLAY", "SLAYING", "FUCK", ""]
+  ],
   "*": [
-    ["?", "??", "???", "!", "!!"]
+    ["?", "??", "???", "!", "!!", "¿", "¿¿", "¿¿¿", "?¿"]
   ]
 }
 
@@ -62,7 +86,7 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
   const result: Array<string> = [];
 
   combinaisons.forEach((comb: Array<string>) => {
-    const rand = getRandomInt(0, comb.length);
+    const rand = getRandomInt(0, comb.length - 1);
     result.push(comb[rand]);
   });
 
@@ -72,40 +96,49 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
 export const generate = () => {
   const result: Array<string> = [];
   let currentSequence = [];
+  let lastRequiredSequenceLength = getRandomInt(10, 20);
 
-  while (result.length < 200) {
+  while (result.length < 50) {
     // Generating words
-    if (currentSequence.length < 40) {
-      let word;
+    if (currentSequence.length < lastRequiredSequenceLength) {
+      let word: string;
 
-      while (!word || currentSequence.includes(word)) {
+      do {
         word = getRandomWord();
-      }
-
-      currentSequence.push(word);
+      } while (currentSequence.includes(word));
 
       if (Object.keys(WORD_COMBINAISONS).includes(word)) {
         const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word];
 
-        let phrase;
+        let phrase: Array<string>;
 
-        while (!phrase || currentSequence.includes(phrase)) {
+        do {
           phrase = buildPhraseFromCombinaisons(combinaisons);
+        } while (currentSequence.join(" ").includes([word, ...phrase].join(" ")));
+
+        const totalPhrase: Array<string> = [word, ...phrase];
+
+        // 35% chance to reduce words to lowercase
+        if (getRandomInt(0, 100) < 35) {
+          totalPhrase.forEach((el, i) => totalPhrase.splice(i, 1, el.toLowerCase()));
         }
 
-        currentSequence.push(...phrase);
+        currentSequence.push(...totalPhrase);
+      }
+      else {
+        currentSequence.push(word);
       }
 
       // 15% chance to display punctuation
-      if (getRandomInt(0, 100) < 15) {
+      if (getRandomInt(0, 100) < 25) {
         currentSequence.push(getRandomPunctuation());
       }
-
-      result.push(...currentSequence);
     }
     // Generating chinese characters
     // Resets current sequence word count
     else {
+      lastRequiredSequenceLength = getRandomInt(15, 30);
+      result.push(...currentSequence);
       currentSequence = [];
 
       const nbChar = getRandomInt(3, 7);
