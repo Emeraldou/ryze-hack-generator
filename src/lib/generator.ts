@@ -1,3 +1,5 @@
+import { Config } from '../interfaces/config';
+
 const CHINESE_POOL = [
   "英", "雄", "联", "盟", "大", "厦", "及", "发", "暨", "在", "地", "毯", "上",
   "骇", "客"
@@ -12,7 +14,8 @@ const WORD_POOL = [
   "XD", "CHICKEN", "NUGGETS", "CHINESE", "FAKER", "RIOT", "TRICK2G", "3K ELO",
   "200K CRIT", "CHEDDAR", "DAB", "MCFLY", "CHOVY", "JAPENESE", "FUCK", "DUMBFUCK",
   "BRAIN", "FAST", "SWAG", "ARAM", "SLAY", "FIGHT", "SASUKE", "KOREAN", "BUG",
-  "ONLYFANS", "COFFEE", "MACRO", "GOD", "GULAG", "TELEPORTATION", "COOLDOWN"
+  "ONLYFANS", "COFFEE", "MACRO", "GOD", "GULAG", "TELEPORTATION", "COOLDOWN",
+  "KEBAB", "LAG"
 ];
 
 const WORD_COMBINAISONS = {
@@ -93,12 +96,12 @@ const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
   return result;
 }
 
-export const generate = () => {
+export const generate = (config: Config) => {
   const result: Array<string> = [];
   let currentSequence = [];
   let lastRequiredSequenceLength = getRandomInt(10, 20);
 
-  while (result.length < 50) {
+  while (result.length < config.length) {
     // Generating words
     if (currentSequence.length < lastRequiredSequenceLength) {
       let word: string;
@@ -118,9 +121,11 @@ export const generate = () => {
 
         const totalPhrase: Array<string> = [word, ...phrase];
 
-        // 35% chance to reduce words to lowercase
-        if (getRandomInt(0, 100) < 35) {
-          totalPhrase.forEach((el, i) => totalPhrase.splice(i, 1, el.toLowerCase()));
+        // Chances to reduce words to lowercase
+        if (getRandomInt(0, 100) < config.lowercaseProbability) {
+          for (let i = 0; i < totalPhrase.length; i++) {
+            totalPhrase.splice(i, 1, totalPhrase[i].toLowerCase());
+          }
         }
 
         currentSequence.push(...totalPhrase);
@@ -129,8 +134,8 @@ export const generate = () => {
         currentSequence.push(word);
       }
 
-      // 15% chance to display punctuation
-      if (getRandomInt(0, 100) < 25) {
+      // Chances to display punctuation
+      if (getRandomInt(0, 100) < config.punctuationProbability) {
         currentSequence.push(getRandomPunctuation());
       }
     }
@@ -141,7 +146,7 @@ export const generate = () => {
       result.push(...currentSequence);
       currentSequence = [];
 
-      const nbChar = getRandomInt(3, 7);
+      const nbChar = getRandomInt(config.minChineseSequenceLength, config.maxChineseSequenceLength);
       let chinesePhrase = "";
 
       for (let i = 0; i < nbChar; i++) {
