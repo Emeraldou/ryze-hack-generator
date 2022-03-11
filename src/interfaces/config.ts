@@ -13,9 +13,28 @@ export interface Config {
 
   /**
    * Probability of switching a sequence of words into lowercase.
-   * By default is 35%
+   * By default is 30%
    */
   lowercaseProbability?: number
+
+  /**
+   * Probability of picking a random person instead of a word. 2 people must
+   * be separated by at least {minPeopleSpacing} words.
+   * By default is 20%
+   */
+  peopleProbability?: number
+
+  /**
+   * Minimum amount of words between two people
+   * By default is 2
+   */
+  minPeopleSpacing?: number
+
+  /**
+   * Minimum amount of words between two featuring
+   * By default is 10
+   */
+  minFeaturingSpacing?: number
 
   /**
    * Minimum length of a sequence of chinese characters.
@@ -31,13 +50,13 @@ export interface Config {
 
   /**
    * Minimum length of a sequence of words.
-   * By default is 10.
+   * By default is 7.
    */
   minWordSequenceLength?: number
 
   /**
    * Maximum length of a sequence of words.
-   * By default is 20.
+   * By default is 15.
    */
   maxWordSequenceLength?: number
 
@@ -59,4 +78,13 @@ export interface Config {
    * @param pool {Array<string>}
    */
   chinesePool?: (pool: Array<string>) => Array<string>
+
+  /**
+   * Defines a callable configuration which is going to configure the array of available people names.
+   *
+   * If used, MUST return an array of strings.
+   *
+   * @param pool {Array<string>}
+   */
+  peoplePool?: (pool: Array<string>) => Array<string>
 }

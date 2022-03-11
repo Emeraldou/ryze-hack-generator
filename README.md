@@ -50,10 +50,35 @@ punctuation is defined as "?", "!" and "¿". Each of these can be repeated **thr
 
 ### lowercaseProbability
 
-```number``` ```default: 35```
+```number``` ```default: 30```
 
 The probability as percentage to transform the generated sequence into lowercase. By default,
 everything is in uppercase.
+
+---
+
+### peopleProbability
+
+```number``` ```default: 20```
+
+The probability to roll a person instead of a word. Then, there is 50% chance that the
+person's name will be followed by "FEAT any word"
+
+---
+
+### minPeopleSpacing
+
+```number``` ```default: 2```
+
+Minimum amount of random words between two people names.
+
+---
+
+### minFeaturingSpacing
+
+```number``` ```default: 10```
+
+Minimum amount of random words that must separate two "FEAT" strings.
 
 ---
 
@@ -76,7 +101,7 @@ Same as ```minChineseSequenceLength``` but for the maximum length. Must obviousl
 
 ### minWordSequenceLength
 
-```number``` ```default: 10```
+```number``` ```default: 7```
 
 Minimum length of a sequence of words.
 
@@ -84,7 +109,7 @@ Minimum length of a sequence of words.
 
 ### maxWordSequenceLength
 
-```number``` ```default: 20```
+```number``` ```default: 15```
 
 Maximum length of a sequence of words.
 
@@ -126,6 +151,28 @@ import RyzeHackGenerator from '@emeraldou/ryze';
 RyzeHackGenerator.generate({
     chinesePool: (pool: Array<string>) => {
       pool.push("厦");
+      return pool;
+    }
+});
+```
+
+---
+
+### peoplePool
+
+```Function``` ```default: undefined```
+
+Defines a callable configuration which is going to configure the array of available
+people names to insert instead of words.
+
+If used, **MUST** return an array of strings.
+
+```ts
+import RyzeHackGenerator from '@emeraldou/ryze';
+
+RyzeHackGenerator.generate({
+    peoplePool: (pool: Array<string>) => {
+      pool.push("SKYYART");
       return pool;
     }
 });

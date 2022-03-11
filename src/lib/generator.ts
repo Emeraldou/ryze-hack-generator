@@ -1,3 +1,4 @@
+import Operators from '../enums/operators';
 import { Config } from '../interfaces/config';
 
 let CHINESE_POOL = [
@@ -5,20 +6,29 @@ let CHINESE_POOL = [
   "骇", "客"
 ];
 
+let PEOPLE_POOL = [
+  "SNOOP DOG", "JACQUES CHIRAC", "DOINB", "SKYYART", "FAKER", "TRICK2G", "DOPA",
+  "NB3", "MCFLY", "CHOVY", "ELON MUSK"
+];
+
 let WORD_POOL = [
-  "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "DOINB",
-  "XPLOIT", "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI",
-  "FATIMA", "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING",
-  "PROCESS", "REKT", "SKYYART", "NB3", "SMURF", "1200", "300K CRIT", "ORNITHORYNQUE",
-  "CHEVRE", "TOP 1", "9K ELO", "LMAO", "ROFL", "WORLD RECORD", "BAN", "DOPA", "OPGG",
-  "XD", "CHICKEN", "NUGGETS", "CHINESE", "FAKER", "RIOT", "TRICK2G", "3K ELO",
-  "200K CRIT", "CHEDDAR", "DAB", "MCFLY", "CHOVY", "JAPENESE", "FUCK", "DUMBFUCK",
-  "BRAIN", "FAST", "SWAG", "ARAM", "SLAY", "FIGHT", "SASUKE", "KOREAN", "BUG",
-  "ONLYFANS", "COFFEE", "MACRO", "GOD", "GULAG", "TELEPORTATION", "COOLDOWN",
-  "KEBAB", "LAG"
+  "L9", "TURBO", "WEED", "HACK", "UNDETECTED", "WTF", "PERMA BAN", "XPLOIT", 
+  "KILLING SPREE", "SEX", "2022", "MCDONALDS", "BURGER KING", "HENTAI", "FATIMA", 
+  "YASSIN", "DEPE", "BELGE", "NO SCOPE", "360", "FFS", "BRAINSTORMING", "PROCESS", 
+  "REKT", "SMURF", "1200", "300K CRIT", "ORNITHORYNQUE", "CHEVRE", "TOP 1", 
+  "9K ELO", "LMAO", "ROFL", "WORLD RECORD", "BAN", "OPGG", "XD", "CHICKEN", 
+  "NUGGETS", "CHINESE", "RIOT", "3K ELO", "200K CRIT", "CHEDDAR", "DAB", 
+  "JAPENESE", "FUCK", "DUMBFUCK", "BRAIN", "FAST", "SWAG", "ARAM", "SLAY", 
+  "FIGHT", "SASUKE", "KOREAN", "BUG", "ONLYFANS", "COFFEE", "MACRO", "GOD", 
+  "GULAG", "TELEPORTATION", "COOLDOWN", "KEBAB", "LAG", "SPEEDRUN",
+  "COMBO", "PERMA IN FOG"
 ];
 
 const WORD_COMBINAISONS = {
+  [Operators.ANY_PEOPLE]: [
+    ["FEAT", Operators.NOTHING],
+    [Operators.ANY_WORD]
+  ],
   "UNDETECTED": [
     ["IN"],
     [
@@ -33,7 +43,7 @@ const WORD_COMBINAISONS = {
     ]
   ],
   "WTF": [
-    ["(wtf ?)", "WAS THAT ???", "BRO"]
+    ["(wtf ?)", "WAS THAT ???", "BRO", "(quoi la baise ?)"]
   ],
   "MCDONALDS": [
     ["EMPLOYEE", "MANAGER", "CEO"]
@@ -48,21 +58,20 @@ const WORD_COMBINAISONS = {
     ["MOVEMENT SPEED", "ABILITY POWER", "ATTACK DAMAGE"]
   ],
   "YASSIN": [
-    ["INSTALOCK", ""]
+    ["INSTALOCK", Operators.NOTHING]
   ],
   "FATIMA": [
-    ["INSTALOCK", ""]
+    ["INSTALOCK", Operators.NOTHING]
   ],
   "FAKER": [
     ["RETARDED", "WHAT WAS THAT ???", "WTF ?"]
   ],
-  "MCFLY": [
-    ["AND"],
-    ["CARLITO", "YOUR MOTHER", "AMOURANTH"],
-    ["WTF ?"]
-  ],
   "FAST": [
-    ["REKT", "SEX", "SLAY", "SLAYING", "FUCK", ""]
+    ["REKT", "SEX", "SLAY", "SLAYING", "FUCK", Operators.NOTHING]
+  ],
+  "SPEEDRUN": [
+    [Operators.ANY_WORD],
+    ["ANY%"]
   ],
   "*": [
     ["?", "??", "???", "!", "!!", "!!!", "¿", "¿¿", "¿¿¿", "?¿"]
@@ -81,98 +90,172 @@ const getRandomWord = () => {
   return WORD_POOL[getRandomInt(0, WORD_POOL.length - 1)];
 }
 
+const getRandomPerson = () => {
+  return PEOPLE_POOL[getRandomInt(0, PEOPLE_POOL.length - 1)];
+}
+
 const getRandomPunctuation = () => {
   return WORD_COMBINAISONS["*"][0][getRandomInt(0, WORD_COMBINAISONS["*"][0].length - 1)];
 }
 
-const buildPhraseFromCombinaisons = (combinaisons: Array<Array<string>>) => {
-  const result: Array<string> = [];
+const getChinesePhrase = (config: Config) => {
+  const nbChar = getRandomInt(config.minChineseSequenceLength, config.maxChineseSequenceLength);
+  let chinesePhrase = "";
 
-  combinaisons.forEach((comb: Array<string>) => {
-    const rand = getRandomInt(0, comb.length - 1);
-    result.push(comb[rand]);
-  });
+  for (let i = 0; i < nbChar; i++) {
+    chinesePhrase += getRandomChineseChar();
+  }
 
-  return result;
+  return chinesePhrase;
 }
+
+const prob = (target: number) => getRandomInt(0, 100) < target + 1
 
 export const generate = (config: Config) => {
   const result: Array<string> = [];
-  let currentSequence = [];
-  let lastRequiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
+  let requiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
 
+  // Currently generated word sequence in order to know easily when to generate chinese characters
+  let currentWordSequence: Array<string> = [];
+
+  // Configuring pools
   if (config.wordPool) {
     WORD_POOL = config.wordPool(WORD_POOL);
   }
-
   if (config.chinesePool) {
     CHINESE_POOL = config.chinesePool(CHINESE_POOL);
   }
+  if (config.peoplePool) {
+    PEOPLE_POOL = config.peoplePool(PEOPLE_POOL);
+  }
 
   while (result.length < config.length) {
-    // Generating words
-    if (currentSequence.length < lastRequiredSequenceLength) {
+    // Can generate a word
+    if (currentWordSequence.length < requiredSequenceLength) {
       let word: string;
 
+      // Generates a word that's not in current sequence
       do {
-        word = getRandomWord();
-      } while (currentSequence.includes(word));
+        // Tries to generate a person word
+        if (prob(config.peopleProbability)) {
+          let hasFoundPerson = false;
 
-      if (Object.keys(WORD_COMBINAISONS).includes(word)) {
-        const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word];
+          // Prevents another person to appear if any has already been generated lastly
+          for (let i = 1; i <= config.minPeopleSpacing; i++) {
+            const currentWord = result[result.length - i];
 
-        let phrase: Array<string>;
-
-        do {
-          phrase = buildPhraseFromCombinaisons(combinaisons);
-        } while (currentSequence.join(" ").includes([word, ...phrase].join(" ")));
-
-        const totalPhrase: Array<string> = [word, ...phrase];
-        let lowercasePhrase = [];
-
-        // Chances to reduce words to lowercase
-        if (getRandomInt(0, 100) < config.lowercaseProbability + 1) {
-          for (let i = 0; i < totalPhrase.length; i++) {
-            lowercasePhrase.push(totalPhrase[i].toLowerCase());
+            if (currentWord && PEOPLE_POOL.includes(currentWord.toUpperCase())) {
+              hasFoundPerson = true;
+              break;
+            }
           }
+
+          // If has found a person lastly, generates a word instead of a person
+          word = hasFoundPerson ? getRandomWord() : getRandomPerson();
         }
         else {
-          lowercasePhrase = totalPhrase;
+          word = getRandomWord();
         }
+      } while (currentWordSequence.includes(word));
 
-        currentSequence.push(...lowercasePhrase);
-      }
-      else {
-        // Chances to reduce words to lowercase
-        if (getRandomInt(0, 100) < config.lowercaseProbability + 1) {
-          word = word.toLowerCase();
-        }
+      // Saves word in current sequence
+      currentWordSequence.push(word);
 
-        currentSequence.push(word);
+      // Tries to lowercase the word
+      if (prob(config.lowercaseProbability)) {
+        word = word.toLowerCase();
       }
 
-      // Chances to display punctuation
-      if (getRandomInt(0, 100) < config.punctuationProbability + 1) {
-        currentSequence.push(getRandomPunctuation());
+      // Saves word to final result
+      result.push(word);
+
+      // If the current word is a person, appends generic combinaisons of people
+      if (PEOPLE_POOL.includes(word.toUpperCase())) {
+        const peopleCombinaisons: Array<Array<string>> = WORD_COMBINAISONS[Operators.ANY_PEOPLE];
+
+        for (const comb of peopleCombinaisons) {
+          let randomComb = comb[getRandomInt(0, comb.length - 1)];
+          let continues = true;
+
+          // Prevents FEAT generation if another FEAT has already been generated lastly
+          if (randomComb === "FEAT") {
+            for (let i = 1; i <= config.minFeaturingSpacing; i++) {
+              const currentWord = result[result.length - i];
+
+              if (currentWord && currentWord.toUpperCase() === "FEAT") {
+                continues = false;
+                break;
+              }
+            }
+          }
+          // Stops right now if Nothing is chosen
+          else if (randomComb === Operators.NOTHING) {
+            break;
+          }
+          // Gets any word
+          else if (randomComb === Operators.ANY_WORD) {
+            randomComb = getRandomWord();
+          }
+          // Gets any person
+          else if (randomComb === Operators.ANY_PEOPLE) {
+            randomComb = getRandomPerson();
+          }
+
+          if (continues) {
+            if (prob(config.lowercaseProbability)) {
+              randomComb = randomComb.toLowerCase();
+            }
+
+            result.push(randomComb);
+          }
+          else {
+            break;
+          }
+        }
+      }
+
+      // Checks for other combinaisons
+      if (Object.keys(WORD_COMBINAISONS).includes(word.toUpperCase())) {
+        const combinaisons: Array<Array<string>> = WORD_COMBINAISONS[word.toUpperCase()];
+
+        for (const comb of combinaisons) {
+          let randomComb = comb[getRandomInt(0, comb.length - 1)];
+
+          // Stops right now if Nothing is chosen
+          if (randomComb === Operators.NOTHING) {
+            break;
+          }
+          else if (randomComb === Operators.ANY_WORD) {
+            randomComb = getRandomWord();
+          }
+          // Gets any person
+          else if (randomComb === Operators.ANY_PEOPLE) {
+            randomComb = getRandomPerson();
+          }
+
+          if (prob(config.lowercaseProbability)) {
+            randomComb = randomComb.toLowerCase();
+          }
+
+          result.push(randomComb);
+        }
+      }
+
+      // Tries to generate some punctuation at the end of the sequence
+      if (prob(config.punctuationProbability)) {
+        result.push(getRandomPunctuation());
       }
     }
-    // Generating chinese characters
-    // Resets current sequence word count
+    // Generates a Chinese phrase and resets
     else {
-      lastRequiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
-      result.push(...currentSequence);
-      currentSequence = [];
+      // Pushes Chinese phrase
+      result.push(getChinesePhrase(config));
 
-      const nbChar = getRandomInt(config.minChineseSequenceLength, config.maxChineseSequenceLength);
-      let chinesePhrase = "";
-
-      for (let i = 0; i < nbChar; i++) {
-        chinesePhrase += getRandomChineseChar();
-      }
-
-      result.push(chinesePhrase);
+      // Rests current word sequence and re-defines required sequence length
+      requiredSequenceLength = getRandomInt(config.minWordSequenceLength, config.maxWordSequenceLength);
+      currentWordSequence = [];
     }
   }
-  
+
   return result.join(" ");
 }
