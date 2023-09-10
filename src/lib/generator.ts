@@ -7,8 +7,8 @@ let CHINESE_POOL = [
 ];
 
 let PEOPLE_POOL = [
-  "SNOOP DOG", "JACQUES CHIRAC", "DOINB", "SKYYART", "FAKER", "TRICK2G", "DOPA",
-  "NB3", "MCFLY", "CHOVY", "ELON MUSK"
+  "SNOOP DOG", "JACQUES CHIRAC", "DOINB", "SKYYART", "FAKER", "DOPA",
+  "MCFLY", "CHOVY", "ELON MUSK", "MACRON", "ZELDFIRE", "POUTINE"
 ];
 
 let WORD_POOL = [
@@ -21,7 +21,7 @@ let WORD_POOL = [
   "JAPENESE", "FUCK", "DUMBFUCK", "BRAIN", "FAST", "SWAG", "ARAM", "SLAY", 
   "FIGHT", "SASUKE", "KOREAN", "BUG", "ONLYFANS", "COFFEE", "MACRO", "GOD", 
   "GULAG", "TELEPORTATION", "COOLDOWN", "KEBAB", "LAG", "SPEEDRUN",
-  "COMBO", "PERMA IN FOG"
+  "COMBO", "PERMA IN FOG", "HEIIIIIN ????", "CUMDRINKER", "WASHED UP"
 ];
 
 const WORD_COMBINAISONS = {
@@ -43,7 +43,7 @@ const WORD_COMBINAISONS = {
     ]
   ],
   "WTF": [
-    ["(wtf ?)", "WAS THAT ???", "BRO", "(quoi la baise ?)"]
+    ["(wtf ?)", "WAS THAT ???", "BRO", "(quoi la baise ?)", "(HEIIIIIN ????)"]
   ],
   "MCDONALDS": [
     ["EMPLOYEE", "MANAGER", "CEO"]
